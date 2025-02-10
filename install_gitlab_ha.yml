@@ -1,0 +1,55 @@
+- name: Install GitLab HA for Praefect and Gitaly
+  hosts: "gitlab-rails"
+  become: true
+  become_user: root
+  serial: "{{ serial_number | default('1') }}"
+  vars_files:
+    - vars/gitlabhaVars.yml
+  tasks:
+    - name: Install pre-req packages
+      ansible.builtin.yum:
+        name: "{{ item }}"
+        state: latest
+      with_items: 
+        - curl 
+        - openssh-server
+        - perl
+
+    - name: Add GitLab Repo
+      ansible.builtin.shell: "curl https://packages.gitlab.com/install/repositories/gitlab/gitlab-ee/script.rpm.sh | sudo bash"
+      args:
+        creates: /etc/yum.repos.d/gitlab_gitlab-ee.repo
+
+    - name: Install GitLab
+      ansible.builtin.yum:
+        name: "gitlab-ee"
+        state: present
+
+    - name: Update /etc/gitlab/gitlab.rb for Praefect and Gitaly
+      ansible.builtin.template:
+        src: templates/gitlab.rb.j2
+        dest: /etc/gitlab/gitlab.rb
+        owner: root
+        group: root
+        mode: '0600'
+      register: template
+
+    - name: Reconfigure GitLab
+      ansible.builtin.shell: "gitlab-ctl reconfigure"
+      register: result
+      retries: 3
+      delay: 10
+      until: result.rc == 0
+      failed_when: "'failed' in result.stderr"  # Retry only if "failed" appears in error
+      when: template.changed
+    
+
+    - name: Restart GitLab
+      ansible.builtin.shell: "gitlab-ctl restart"
+      when: template.changed
+
+    - name: skip auto reconfigure
+      ansible.builtin.file:
+        path: /etc/gitlab/skip-auto-reconfigure
+        state: touch
+      when: "'praefect' in inventory_hostname or 'gitlab-rails' in inventory_hostname"

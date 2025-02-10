@@ -1,0 +1,30 @@
+#[praefect]
+#praefect-1 ansible_host=192.168.29.65 ansible_user=root ansible_ssh_pass='password' ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+#praefect-2 ansible_host=192.168.29.38 ansible_user=root ansible_ssh_pass='password' ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+#praefect-3 ansible_host=192.168.29.142 ansible_user=root ansible_ssh_pass='password' ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+#[gitaly]
+#gitaly_1_dns ansible_host=192.168.29.68 ansible_user=root ansible_ssh_pass='password' ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+#gitaly_2_dns ansible_host=192.168.29.115 ansible_user=root ansible_ssh_pass='password' ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+#gitaly_3_dns ansible_host=192.168.29.132 ansible_user=root ansible_ssh_pass='password' ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+#[gitlab-rails]
+#gitlab-rails_1_dns ansible_host=192.168.29.200 ansible_user=root ansible_ssh_pass='password' ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+#gitlab-rails_2_dns ansible_host=192.168.29.116 ansible_user=root ansible_ssh_pass='password' ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+#gitlab-rails_3_dns ansible_host=192.168.29.10 ansible_user=root ansible_ssh_pass='password' ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+#[internal_loadbalancer]
+#haproxy ansible_host=localhost ansible_user=root ansible_ssh_pass='password' ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+[praefect]
+praefect-1 ansible_host=3.15.206.155 ansible_user=ec2-user ansible_ssh_private_key_file=/home/nishit/Downloads/rajesh-new.pem ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+praefect-2 ansible_host=3.16.66.160 ansible_user=ec2-user ansible_ssh_private_key_file=/home/nishit/Downloads/rajesh-new.pem ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+praefect-3 ansible_host=18.223.107.253 ansible_user=ec2-user ansible_ssh_private_key_file=/home/nishit/Downloads/rajesh-new.pem ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+[gitaly]
+gitaly-1 ansible_host=18.188.83.60 ansible_user=ec2-user ansible_ssh_private_key_file=/home/nishit/Downloads/rajesh-new.pem ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+gitaly-2 ansible_host=18.188.238.60 ansible_user=ec2-user ansible_ssh_private_key_file=/home/nishit/Downloads/rajesh-new.pem ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+gitaly-3 ansible_host=3.144.48.151 ansible_user=ec2-user ansible_ssh_private_key_file=/home/nishit/Downloads/rajesh-new.pem ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+[internal_loadbalancer]
+haproxy ansible_host=18.216.173.35 ansible_user=ec2-user ansible_ssh_private_key_file=/home/nishit/Downloads/rajesh-new.pem ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+
+
+[gitlab-rails]
+gitlab-rails-1 ansible_host=3.137.177.231 ansible_user=root ansible_user=ec2-user ansible_ssh_private_key_file=/home/nishit/Downloads/rajesh-new.pem ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+gitlab-rails-2 ansible_host=3.139.67.55 ansible_user=ec2-user ansible_ssh_private_key_file=/home/nishit/Downloads/rajesh-new.pem ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+gitlab-rails-3 ansible_host=3.15.206.70 ansible_user=ec2-user ansible_ssh_private_key_file=/home/nishit/Downloads/rajesh-new.pem ansible_ssh_common_args='-o StrictHostKeyChecking=no'

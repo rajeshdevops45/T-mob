@@ -1,0 +1,31 @@
+---
+- name: Install GitLab HA Load Balancer
+  hosts: internal_loadbalancer
+  become: true
+  vars_files:
+    - vars/gitlabhaVars.yml
+
+  tasks:
+    - name: Install haproxy
+      ansible.builtin.yum:
+        name: haproxy
+        state: latest   
+    - name: Copy internal HAProxy configuration
+      ansible.builtin.template:
+        src: templates/internal-haproxy.cfg.j2
+        dest: /etc/haproxy/haproxy.cfg
+        mode: "0644"
+      notify:
+        - Restart HAProxy
+
+    - name: Enable HAProxy on boot
+      ansible.builtin.service:
+        name: haproxy
+        enabled: yes
+
+  handlers:
+    - name: Restart HAProxy
+      ansible.builtin.service:
+        name: haproxy
+        state: restarted
+
