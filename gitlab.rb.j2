@@ -1,0 +1,148 @@
+## Praefect Configuration
+{% if inventory_hostname == 'praefect-1'  %}
+praefect['enable'] = true
+praefect['auto_migrate'] = true
+{% endif %}
+{% if 'praefect' in inventory_hostname %}
+gitaly['enable'] = false
+postgresql['enable'] = false
+redis['enable'] = false
+nginx['enable'] = false
+puma['enable'] = false
+sidekiq['enable'] = false
+gitlab_workhorse['enable'] = false
+prometheus['enable'] = false
+alertmanager['enable'] = false
+gitlab_exporter['enable'] = false
+gitlab_kas['enable'] = false
+praefect['enable'] = true
+praefect['auto_migrate'] = false
+# Praefect Configuration
+
+# Prevent database migrations from running on upgrade automatically
+gitlab_rails['auto_migrate'] = false
+praefect['configuration'] = {
+   # ...
+   listen_addr: '0.0.0.0:2305',
+   auth: {
+      # ...
+      #
+      # Praefect External Token
+      # This is needed by clients outside the cluster (like GitLab Shell) to communicate with the Praefect cluster
+      token: '{{ praefect_external_token }}',
+   },
+   # Praefect Database Settings
+   database: {
+      # ...
+      host: '{{ praefect_db_dns }}',
+      port: 5432,
+      dbname: 'praefect_db',
+      user: 'praefect',
+      password: '{{ praefect_postgresql_password }}',
+   },
+   # Praefect Virtual Storage config
+   # Name of storage hash must match storage name in gitlab_rails['repositories_storages'] on GitLab
+   # server ('praefect') and in gitaly['configuration'][:storage] on Gitaly nodes ('gitaly-1')
+   virtual_storage: [
+      {
+         # ...
+         name: 'default',
+         node: [
+            {
+               storage: 'gitaly-1',
+               address: 'tcp://{{ gitaly_1_dns }}:8075',
+               token: '{{ praefect_internal_token }}'
+            }
+         ],
+      },
+   ],
+   # Set the network address Praefect will listen on for monitoring
+   prometheus_listen_addr: '0.0.0.0:9652',
+}
+{% endif %}
+
+## Gitaly Configuration
+{% if 'gitaly' in inventory_hostname %}
+postgresql['enable'] = false
+redis['enable'] = false
+nginx['enable'] = false
+puma['enable'] = false
+sidekiq['enable'] = false
+gitlab_workhorse['enable'] = false
+prometheus['enable'] = false
+alertmanager['enable'] = false
+gitlab_exporter['enable'] = false
+gitlab_kas['enable'] = false
+gitlab_rails['auto_migrate'] = false
+gitlab_rails['internal_api_url'] = ''
+gitaly['enable'] = true
+gitaly['configuration'] = {
+   # Make Gitaly accept connections on all network interfaces. You must use
+   # firewalls to restrict access to this address/port.
+   # Comment out following line if you only want to support TLS connections
+   listen_addr: '0.0.0.0:8075',
+   # Set the network address that Gitaly will listen on for monitoring
+   prometheus_listen_addr: '0.0.0.0:9236',
+   auth: {
+      # Gitaly Auth Token
+      # Should be the same as praefect_internal_token
+      token: '{{ praefect_internal_token }}',
+   },
+   {% if inventory_hostname == 'gitaly-1' %}
+      storage: [
+      {
+         name: 'gitaly-1',
+         path: '/var/opt/gitlab/git-data',
+      },
+   ]
+   {% elif inventory_hostname == 'gitaly-2' %}
+         storage: [
+      {
+         name: 'gitaly-2',
+         path: '/var/opt/gitlab/git-data',
+      },
+   ]
+  {% elif inventory_hostname == 'gitaly-3' %}
+           storage: [
+        {
+           name: 'gitaly-3',
+           path: '/var/opt/gitlab/git-data',
+        },
+     ]
+     {% endif %}
+}
+{% endif %}
+
+
+
+
+## gitlab-rails Configuration
+{% if 'gitlab-rails' in inventory_hostname %}
+external_url 'https://gitlab.example.com'
+
+# gitlab_rails['repositories_storages'] gets configured for the Praefect virtual storage
+# Address is the Internal Load Balancer for Praefect
+# Token is the praefect_external_token
+gitlab_rails['repositories_storages'] = {
+  "default" => {
+    "gitaly_address" => "tcp://'{{ internal_loadbalancer }}'2305", # internal load balancer IP
+    "gitaly_token" => '{{ praefect_external_token }}'
+  }}
+roles ['application_role' ]
+gitaly['enable'] = false
+sidekiq['enable'] = false
+postgresql['enable'] = false
+gitlab_rails['db_adapter'] = "postgresql"
+gitlab_rails['db_encoding'] = "unicode"
+gitlab_rails['db_database'] = "gitlab_rails_db"
+gitlab_rails['db_username'] = "gitlab_rails"
+gitlab_rails['db_password'] = '{{ gitlab_rails_postgresql_password }}'
+gitlab_rails['db_host'] = '{{ gitlab_rails_db_dns }}'
+gitlab_rails['db_port'] = 5432
+gitlab_rails['auto_migrate'] = false
+#### Redis TCP connection
+gitlab_rails['redis_host'] = "'{{ redis_host }}'"
+gitlab_rails['redis_port'] = 6379
+gitlab_rails['redis_ssl'] = false
+gitlab_rails['redis_password'] = "'{{ redis_password }}'"
+{% endif %}

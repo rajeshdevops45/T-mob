@@ -1,0 +1,26 @@
+praefect_1_dns: 3.15.206.155
+praefect_2_dns: 3.16.66.160
+praefect_3_dns: 18.223.107.253
+
+praefect_db_dns: database-1.c7mmis8c6ens.us-east-2.rds.amazonaws.com
+praefect_external_token: 746c817eb5a1c12b571f0116fcda1c45d21751aa13a8183cc05f4dbbad7e5527
+praefect_internal_token: b40f340dbe976cf830e4c818a88a04b96b1cc1b146e7f7f7e44988ae696970b423
+praefect_postgresql_password: password@123
+
+gitaly_1_dns: 18.188.83.60
+gitlay_2_dns: 18.188.238.60
+gitlay_3_dns: 3.144.48.151
+
+gitlab_rails_1: 3.137.177.231
+gitlab_rails_2: 3.139.67.55
+gitlab_rails_3: 3.15.206.70
+
+internal_loadbalancer: 18.216.173.35
+
+
+gitlab_rails_db_dns: database-1.c7mmis8c6ens.us-east-2.rds.amazonaws.com
+gitlab_rails_postgresql_password: password@123
+
+
+redis_host: 18.216.173.35
+redis_password: Password@123
